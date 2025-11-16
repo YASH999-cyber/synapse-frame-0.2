@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESP32 IoT Dashboard</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        color: white;
+
+        /* BACKGROUND IMAGE */
+        background-image: url("images.jpeg");
+        background-size: cover;        /* perfect crop */
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    /* Dark glass transparent box */
+    .container {
+        background: rgba(0, 0, 0, 0.55);
+        width: 320px;
+        padding: 20px;
+        margin: 40px auto;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 0 20px black;
+    }
+
+    .sensor-box {
+        padding: 15px;
+        margin: 10px 0;
+        background: rgba(255, 255, 255, 0.20);
+        border-radius: 10px;
+        font-size: 20px;
+    }
+
+    .btn {
+        padding: 12px 25px;
+        font-size: 18px;
+        margin-top: 15px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        width: 100%;
+        color: white;
+    }
+
+    .on { background: #00c853; }
+    .off { background: #d32f2f; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>🌿 IoT Plant Monitoring</h2>
+
+    <div class="sensor-box">
+        🌡️ Temperature: <span id="temp">--</span> °C
+    </div>
+
+    <div class="sensor-box">
+        💧 Humidity: <span id="humi">--</span> %
+    </div>
+
+    <div class="sensor-box">
+        🌱 Soil Moisture: <span id="moist">--</span> %
+    </div>
+
+    <button id="pumpOn" class="btn on">Pump ON</button>
+    <button id="pumpOff" class="btn off">Pump OFF</button>
+</div>
+
+<script>
+    // Your ESP32 local IP
+    const ESP = "http://10.104.109.37";
+
+    function updateData() {
+        fetch(ESP + "/sensor")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("temp").innerHTML = data.temp;
+            document.getElementById("humi").innerHTML = data.humi;
+            document.getElementById("moist").innerHTML = data.moist;
+        });
+    }
+
+    document.getElementById("pumpOn").onclick = () => {
+        fetch(ESP + "/pump?state=on");
+    };
+
+    document.getElementById("pumpOff").onclick = () => {
+        fetch(ESP + "/pump?state=off");
+    };
+
+    setInterval(updateData, 2000);
+</script>
+
+</body>
+</html>
